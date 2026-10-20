@@ -1,0 +1,15 @@
+# Progress
+- 2026-10-19: Read full user requirements and design handoff. Empty workspace inspected. Planning and implementation started.
+- Frontend initial routes/components implemented; TypeScript check passes. Dependency install succeeded using official npm registry after configured mirror DNS failed.
+- SSE test caught CRLF delimiters split across byte chunks; parser now normalizes the full accumulated buffer and tests rerun.
+- Docker daemon works outside sandbox; infrastructure image pull in progress. Browser TaskSpace 2 created; local preview QA next.
+- 后端最终真实PostgreSQL全套89 passed；实际Meili过期NSFW统计、别名、分面、索引交换与Redis租约/限流均通过。
+- 前端最终7项回归通过；Docker npm10锁文件修复后npm ci及生产构建成功。新增流式Node代理运行时配置，保留真实客户端限流并传递中止。
+- 浏览器验收桌面/390px手机、季度年份连续筛选、NSFW年龄确认与封面、剧透与停止；主题SSR和历史请求竞态已修复。
+- 生产5容器健康；真实代理SSE缺key明确报错，归属和删除验证完成。完整Archive与付费模型调用未执行，写入docs/verification.md。
+- 最终生产图标/健康/动画库200，库内动画与会话均0（测试已清理）；浏览器专用任务已关闭，首页截图保存docs/screenshots/daily-desktop.png并在Codex打开。
+- 临时测试容器与开发服务器停止，保留镜像和持久卷供正式启动；开发预览仍可按README一条npm run dev启动。
+- 2026-10-20: 开始图片修复。实际生产库已导入归档，封面字段大多缺失；官方图片跳转可用。Browser TaskSpace 1。默认沙箱无法访问浏览器/本地服务，提权后连接成功；无 Git 仓库，沿用当前目录。
+- 缺失封面回归先复现失败，再补上官方图片地址；演示模式继续用虚构占位图。新增共享 CoverImage 覆盖列表/搜索/详情背景。角色原图与声优照片查看器完成（缩放、左右、Esc、遮罩、焦点恢复和减少动态效果支持）。
+- 前端10项测试、严格TypeScript通过；Docker生产构建通过并已更新 frontend 容器。独立只读审查未发现重要问题。镜像元数据等待100秒，Next构建约320秒；外部CDN部分浏览器请求较慢，容器实测封面与角色图片均HTTP200，继续生产页面验收。
+- 浏览器最终验收：截图前六部真实封面全部成功加载；角色 large 原图 contain 完整显示；悬停约1.05倍；缩放画布两倍可滚动；左右切换、声优原图、Esc返回焦点、遮罩关闭、Tab焦点限制全部通过。375×812无横向溢出，控制按钮44px；812×375横屏正常；减少动态效果与浅色模式检查通过。截图：docs/screenshots/library-covers-fixed.png、character-viewer-desktop.png、character-viewer-mobile.png。frontend 容器 healthy；Browser TaskSpace 1已finish，临时3001服务器已停止。

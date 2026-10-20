@@ -1,0 +1,118 @@
+name: fanjuwu
+x-backend: &backend
+  image: fanjuwu-backend:local
+  build: ./backend
+  env_file: .env
+  init: true
+  restart: unless-stopped
+  environment:
+    DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://fanjuwu:fanjuwu@postgres:5432/fanjuwu}
+    REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+    MEILI_URL: ${MEILI_URL:-http://meilisearch:7700}
+    TZ: ${TZ:-Asia/Shanghai}
+    TRUSTED_PROXY_CIDRS: '["172.16.0.0/12","10.0.0.0/8"]'
+  depends_on:
+    postgres: { condition: service_healthy }
+    redis: { condition: service_healthy }
+    meilisearch: { condition: service_healthy }
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-fanjuwu}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fanjuwu}
+      POSTGRES_DB: ${POSTGRES_DB:-fanjuwu}
+      TZ: ${TZ:-Asia/Shanghai}
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test:
+        [CMD-SHELL, 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    command: [redis-server, --appendonly, "yes"]
+    restart: unless-stopped
+    volumes: [redis_data:/data]
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+  meilisearch:
+    image: getmeili/meilisearch:v1.12
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-fanjuwu-local-development-key}
+      MEILI_ENV: production
+      MEILI_NO_ANALYTICS: "true"
+    volumes: [meili_data:/meili_data]
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://localhost:7700/health]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+  backend:
+    <<: *backend
+    expose: ["8000"]
+    ports: ["127.0.0.1:${BACKEND_PORT:-8000}:8000"]
+    healthcheck:
+      test:
+        [
+          CMD,
+          python,
+          -c,
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health', timeout=5)",
+        ]
+      interval: 15s
+      timeout: 8s
+      retries: 10
+      start_period: 20s
+  worker:
+    <<: *backend
+    command: [python, -m, app.worker.scheduler]
+    depends_on:
+      backend: { condition: service_healthy }
+    healthcheck:
+      test:
+        [
+          CMD,
+          python,
+          -c,
+          "import os,redis; r=redis.Redis.from_url(os.environ['REDIS_URL']); assert r.exists('worker:heartbeat')",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_BASE: ${NEXT_PUBLIC_API_BASE:-/api}
+        NEXT_PUBLIC_DEMO_MODE: ${NEXT_PUBLIC_DEMO_MODE:-false}
+    restart: unless-stopped
+    init: true
+    environment:
+      API_INTERNAL_URL: ${API_INTERNAL_URL:-http://backend:8000}
+      TZ: ${TZ:-Asia/Shanghai}
+    ports: ["${FRONTEND_PORT:-3000}:3000"]
+    depends_on:
+      backend: { condition: service_healthy }
+    healthcheck:
+      test:
+        [
+          CMD,
+          node,
+          -e,
+          "fetch('http://127.0.0.1:3000').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+volumes:
+  postgres_data:
+  redis_data:
+  meili_data:

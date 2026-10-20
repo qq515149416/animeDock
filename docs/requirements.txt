@@ -1,0 +1,267 @@
+你是一名资深全栈工程师。请一次性完整实现一个动画资讯网站「番剧坞」，包括后端、前端、数据同步、AI 助手和部署配置。不要分阶段、不要省略、不要留 TODO 或"此处自行实现"，每个文件都必须输出完整可运行的代码。
+
+# 一、项目概述
+基于 Bangumi 番组计划（https://bgm.tv）的开放数据，提供三个核心功能：
+1. 每日放送：按星期展示当季正在播出的动画
+2. 动画库：全量动画检索，支持分类、来源、类型、地区（默认日本）、年份 + 季度筛选
+3. AI 番剧助手：接入大模型，优先基于站内数据回答，站内没有时再联网搜索
+另外提供全局 NSFW 内容开关。
+
+# 二、技术栈（必须遵守）
+- 后端：Python 3.11 + FastAPI + SQLAlchemy 2.0（async）+ asyncpg + Pydantic v2 + Alembic
+- 数据库：PostgreSQL 16 + pgvector 扩展
+- 搜索引擎：Meilisearch（meilisearch-python-sdk 异步客户端）
+- 缓存：Redis（redis.asyncio）
+- 定时任务：APScheduler（集成在独立的 worker 进程中）
+- HTTP 客户端：httpx（异步，带重试与限速）
+- 大模型：使用 OpenAI 兼容接口（openai Python SDK，base_url / api_key / model 可配置，以便切换 OpenAI、DeepSeek、通义千问等）
+- Embedding：同样走 OpenAI 兼容接口，模型名与向量维度通过环境变量配置
+- 联网搜索：Tavily API（可通过环境变量关闭；未配置 key 时 web_search 工具直接返回"未启用"）
+- 前端：Next.js 14（App Router）+ TypeScript + Tailwind CSS + shadcn/ui + lucide-react + SWR
+- 部署：Docker Compose 一键启动全部服务
+
+# 三、项目目录结构
+请严格按以下结构输出：
+```
+fanjuwu/
+├── docker-compose.yml
+├── .env.example
+├── README.md
+├── backend/
+│   ├── Dockerfile
+│   ├── pyproject.toml（或 requirements.txt）
+│   ├── alembic.ini
+│   ├── alembic/versions/0001_init.py
+│   └── app/
+│       ├── main.py
+│       ├── config.py
+│       ├── db.py
+│       ├── models.py
+│       ├── schemas.py
+│       ├── deps.py
+│       ├── utils/season.py
+│       ├── utils/wiki_parser.py
+│       ├── services/bangumi_client.py
+│       ├── services/search_service.py
+│       ├── services/calendar_service.py
+│       ├── services/embedding_service.py
+│       ├── services/tag_mapping.py
+│       ├── ai/tools.py
+│       ├── ai/agent.py
+│       ├── ai/prompts.py
+│       ├── routers/calendar.py
+│       ├── routers/anime.py
+│       ├── routers/chat.py
+│       ├── routers/meta.py
+│       └── worker/
+│           ├── scheduler.py
+│           ├── import_archive.py
+│           ├── sync_calendar.py
+│           ├── refresh_current_season.py
+│           └── build_embeddings.py
+└── frontend/
+    ├── Dockerfile
+    ├── package.json
+    ├── next.config.js
+    ├── tailwind.config.ts
+    └── src/
+        ├── app/（layout、page、anime、anime/[id]、chat 等路由）
+        ├── components/
+        ├── lib/api.ts
+        ├── lib/nsfw.ts
+        └── types/
+```
+
+# 四、数据源与同步
+
+## 4.1 Bangumi 数据来源
+- 全量底库：Bangumi 官方 Archive 仓库 https://github.com/bangumi/Archive
+  · 先读取 https://raw.githubusercontent.com/bangumi/Archive/master/aux/latest.json 获取最新导出包的下载地址
+  · 下载 zip 包后流式解析其中的 subject、episode、subject-relations 等 jsonlines 文件（逐行读取，不要一次性载入内存）
+  · 只导入 type=2（动画）的条目及其章节、关联关系
+  · 条目字段包括：id、type、name、name_cn、infobox（wiki 语法原文）、platform、summary、nsfw、date、favorite、tags、score、score_details、rank、meta_tags 等
+  · 实现时请先检查导出文件的实际字段，对缺失字段做兼容处理
+- 实时数据：Bangumi API，base URL 为 https://api.bgm.tv
+  · GET /calendar：每日放送
+  · GET /v0/subjects/{subject_id}：条目详情
+  · GET /v0/episodes?subject_id=xxx：章节列表
+  · GET /v0/subjects/{subject_id}/characters、/persons：角色与制作人员
+  · 注意：/v0/search/subjects 是官方标注的实验性接口，本项目不依赖它做站内搜索
+- 请求规范：
+  · 必须设置可识别的 User-Agent，从环境变量 BANGUMI_USER_AGENT 读取，格式如 "yourname/fanjuwu (https://github.com/yourname/fanjuwu)"
+  · 可选 Access Token（BANGUMI_ACCESS_TOKEN），配置后放在 Authorization: Bearer 头中，用于获取 NSFW 条目
+  · 全局限速：每秒不超过 2 个请求（asyncio.Semaphore + 间隔控制）
+  · 失败重试：指数退避，最多 3 次；处理 429 / 5xx
+
+## 4.2 infobox 解析
+在 utils/wiki_parser.py 中实现 Bangumi wiki 语法解析器，格式示例：
+```
+{{Infobox animanga/TVAnime
+|中文名= 葬送的芙莉莲
+|别名={
+[Frieren]
+[葬送のフリーレン]
+}
+|话数= 28
+|放送开始= 2023年9月29日
+|动画制作= MADHOUSE
+|导演= 斋藤圭一郎
+}}
+```
+要求能解析单值字段与 { [..] [key|value] } 形式的数组字段，返回 dict。从中提取：别名（aliases）、话数（eps）、放送开始日期、放送星期、动画制作（studio）、导演（director）。
+
+## 4.3 标签映射（services/tag_mapping.py）
+meta_tags 与用户 tags 都是自由文本，需要白名单映射为结构化字段：
+- 分类 category：TV / 剧场版 / OVA / WEB / 其他（优先使用 platform 字段，其次 meta_tags）
+- 来源 source：原创 / 漫画改 / 小说改（含"轻小说改"）/ 游戏改 / 动画改 / 其他
+- 地区 region：日本 / 中国（含"国产""中国大陆""中国台湾""中国香港"归并）/ 欧美（含"美国""欧美"等）/ 韩国 / 其他；若无地区标签则默认"日本"
+- 类型 genres（多值）：恋爱、搞笑、奇幻、科幻、异世界、日常、治愈、热血、悬疑、运动、音乐、百合、机战、战斗、校园、后宫、冒险、推理、历史、偶像、美食、惊悚
+映射表以 Python dict 常量形式定义，便于后续维护；meta_tags 命中优先，用户 tags 需达到一定 count 阈值（如 ≥ 10）才计入。
+
+## 4.4 年份与季度（utils/season.py）
+根据首播日期计算：
+- winter：1–3 月；spring：4–6 月；summer：7–9 月；autumn：10–12 月
+- 提供 get_season(date)、get_current_season()、season_date_range(year, season) 三个函数
+- 导入时将 year、season 写为独立字段
+
+## 4.5 定时任务（worker/scheduler.py）
+- 每周一 04:00：import_archive，全量 upsert 后重建 Meilisearch 索引，并对新增或简介有变化的条目增量生成向量
+- 每小时：sync_calendar，拉取 /calendar 写入 Redis（key: calendar:v1，TTL 2 小时），同时把其中条目 upsert 到数据库
+- 每天 05:00：refresh_current_season，对当季及上季条目逐个调用 /v0/subjects/{id} 刷新评分、排名、收藏数、话数，并同步到 Meilisearch
+- worker 启动时如果数据库为空，自动执行一次全量导入
+- 每个任务都要可通过命令行手动执行，例如 python -m app.worker.import_archive
+
+# 五、数据库设计（models.py + Alembic 迁移）
+- anime：id(PK，使用 Bangumi subject id)、name、name_cn、aliases(JSONB)、summary、category、source、region、genres(ARRAY)、platform_raw、air_date(DATE)、year、season、air_weekday、eps、studio、director、score、score_details(JSONB)、rank、collects、tags(JSONB，原始用户标签)、meta_tags(ARRAY)、nsfw(BOOL)、image_url、infobox_raw、updated_at
+- episode：id、anime_id、sort、type、name、name_cn、airdate、duration、description
+- anime_relation：anime_id、related_id、relation_type
+- anime_embedding：anime_id(PK)、content_hash、embedding vector(EMBEDDING_DIM)，建 HNSW 索引（cosine）
+- chat_session：id(UUID)、client_id、title、created_at、updated_at
+- chat_message：id、session_id、role、content、tool_calls(JSONB)、sources(JSONB)、anime_refs(ARRAY)、created_at
+索引：year+season、air_weekday、score、rank、nsfw，以及 genres 的 GIN 索引。
+
+# 六、Meilisearch 索引
+- 索引名 anime，主键 id
+- searchableAttributes：name_cn、name、aliases、studio、director、genres
+- filterableAttributes：category、source、region、genres、year、season、nsfw、score
+- sortableAttributes：score、rank、collects、year、air_date_ts
+- 自定义排序规则：words、typo、proximity、attribute、sort、exactness、collects:desc
+- 支持 facets 返回各筛选项的数量统计
+
+# 七、后端 API（统一前缀 /api，全部带 Pydantic 响应模型并生成 OpenAPI 文档）
+
+NSFW 约定：所有返回动画数据的接口都接受 query 参数 nsfw: bool = false，过滤必须在服务端完成。nsfw=false 时结果与统计数量都不包含 NSFW 条目。
+
+1. GET /api/calendar?nsfw=false
+   返回周一到周日 7 组数据；每部番包含 id、name、name_cn、image_url、score、collects、air_weekday、latest_ep（已播出的最大话数）、is_new（本季首播）/ is_sequel（存在前作关系）、nsfw
+   优先读 Redis，未命中时实时回源并回写缓存
+
+2. GET /api/anime/search
+   参数：q、category、source、region（默认"日本"，传 "all" 表示不限）、genres（可多个，且关系）、year、season、min_score、sort（relevance / score / rank / collects / latest）、page、page_size（默认 24，最大 60）、nsfw
+   返回：items、total、page、facets（各筛选项的计数）
+
+3. GET /api/anime/{id}?nsfw=false
+   返回详情：基础字段 + 章节列表 + 关联作品 + 角色与声优 + 制作人员
+   角色和人员优先读本地缓存，没有时调用 Bangumi API 并在 Redis 中缓存 24 小时
+   若条目为 NSFW 且 nsfw=false，返回 403 及 {"code": "NSFW_BLOCKED"}
+
+4. GET /api/anime/suggest?q=&nsfw=false
+   搜索框联想，返回前 8 条（id、name_cn、name、image_url、year）
+
+5. GET /api/meta/filters
+   返回所有筛选项枚举、年份范围、当前季度
+
+6. POST /api/chat
+   请求体：{ session_id?: string, client_id: string, message: string, nsfw: boolean }
+   响应：SSE 流式输出（text/event-stream），事件类型：
+   - session：{ session_id }
+   - tool_start：{ tool, args, label }，label 如"正在检索站内动画库…"
+   - tool_end：{ tool, result_count }
+   - token：{ content }
+   - anime_refs：{ items: [ {id, name_cn, name, image_url, score, nsfw} ] }
+   - sources：{ items: [ {type: "site" | "web", title, url} ] }
+   - done / error
+
+7. GET /api/chat/sessions?client_id=、GET /api/chat/sessions/{id}、DELETE /api/chat/sessions/{id}
+
+8. GET /api/health：检查数据库、Redis、Meilisearch 是否连通
+
+另外需要：CORS 配置、全局异常处理、基于 Redis 的简单限流（/api/chat 每个 client_id 每分钟 10 次，其余接口每个 IP 每分钟 120 次）。
+
+# 八、AI 番剧助手（ai/ 目录）
+
+## 8.1 Agent 实现
+- 使用 OpenAI 兼容接口的 function calling，自行实现工具调用循环（最多 5 轮），不使用 LangChain 等框架
+- 加载最近 10 条历史消息作为上下文
+- 全程流式输出，工具调用状态通过 SSE 实时推送给前端
+- 当前请求的 nsfw 参数必须透传给所有工具，工具内部强制过滤，不能依赖模型自觉
+
+## 8.2 工具定义（ai/tools.py）
+1. search_anime：结构化筛选与关键词搜索，参数与 /api/anime/search 一致（region 默认"日本"），走 Meilisearch
+2. semantic_search(query, top_k=8)：按剧情、氛围找相似番，用 pgvector 余弦相似度检索；结果再按 nsfw 过滤
+3. get_anime_detail(anime_id)：获取详情、章节、关联作品、制作人员
+4. get_calendar(weekday?)：查询某天或今天的放送，weekday 取 1–7，不传时用北京时间的今天
+5. web_search(query)：联网搜索兜底，调用 Tavily，返回标题、链接、摘要
+每个工具返回精简后的 JSON（控制 token 用量，简介截断到 200 字），同时把涉及的番剧 ID 收集到 anime_refs，把来源收集到 sources。
+
+## 8.3 系统提示词（ai/prompts.py，需包含以下规则，并注入当前日期与当前季度）
+- 你是「番剧坞」的 AI 番剧助手，擅长推荐动画和讨论剧情
+- 必须优先调用站内工具（search_anime / semantic_search / get_anime_detail / get_calendar）获取数据
+- 只有在站内结果为空，或问题涉及站内没有的信息（新闻、制作访谈、最新话剧情、续作消息等）时，才调用 web_search
+- 关于评分、排名、播出时间、集数等事实，只能引用工具返回的数据，不能编造
+- 推荐番剧时说明推荐理由，并引用其名称
+- 涉及关键剧情时，用 [spoiler]...[/spoiler] 包裹剧透内容
+- 当前 NSFW 状态为关闭时，不讨论、不推荐 NSFW 作品；用户问到时回复"该作品属于敏感内容，需开启 NSFW 开关后才能查看相关信息"
+- 使用简体中文，语气友好、像懂番的朋友
+
+## 8.4 向量化（services/embedding_service.py）
+- 每部动画拼接文本：中文名 + 原名 + 别名 + 年份季度 + 分类 + 来源 + 类型 + 前 15 个标签 + 简介
+- 用 content_hash 判断是否需要重新生成；批量调用（每批 64 条），带重试
+- 只为评分人数 ≥ 某阈值（环境变量 EMBED_MIN_COLLECTS，默认 50）的条目生成向量，以控制成本
+
+# 九、前端（Next.js）
+
+## 9.1 视觉风格
+- 默认深色模式，支持浅色切换（next-themes）
+- 主色樱花粉 #FF6B9D，次强调色靛蓝 #5B6CFF；深色背景 #0F1115，卡片 #181B22；浅色背景 #F7F8FA
+- 圆角 12px；卡片 hover 时上浮且封面轻微放大；过渡时长 200ms
+- 封面比例 5:7；加载时显示骨架屏；无结果时显示空状态
+- 响应式：桌面端 6 列 / 平板 4 列 / 手机 2 列；移动端导航改为底部 Tab Bar
+
+## 9.2 全局
+- 吸顶毛玻璃导航：Logo、「每日放送 / 动画库 / AI 助手」、全局搜索（快捷键 / 唤起，带联想）、深浅色切换、设置菜单
+- 设置菜单中有「显示 NSFW 内容」开关，默认关闭；首次开启时弹出确认框：「开启后将显示可能包含成人或敏感内容的作品。请确认你已年满 18 周岁。」；子选项「直接显示 NSFW 封面（不模糊）」，默认关闭
+- NSFW 状态存 localStorage，通过 React Context 全局共享，所有请求自动带上 nsfw 参数
+- NSFW 封面默认 blur(20px) + 遮罩 + 「R18」角标，点击可单张解除模糊
+- client_id：首次访问时生成 UUID 存入 localStorage
+- 页脚：「数据来源：Bangumi 番组计划」并链接到 https://bgm.tv
+
+## 9.3 页面
+1. /（每日放送）：Hero 区显示今天日期、今日更新数和当前季度；周一到周日 Tab 默认选中今天（按北京时间）；卡片显示封面、中文名、原名、评分、"更新至第 X 话"、新番/续作角标
+2. /anime（动画库）：顶部大搜索框；筛选区包含分类、来源、类型（多选）、地区（默认日本）、年份 + 季度组合选择器（年份左右箭头切换 + 冬/春/夏/秋按钮，需醒目）、NSFW 开关；每个选项显示 facet 数量；已选条件汇总栏支持单个移除和清空；排序、网格/列表视图切换、分页；所有筛选状态同步到 URL query；移动端筛选区改为底部抽屉
+3. /anime/[id]（详情）：模糊封面背景；标题、原名、评分、排名、收藏数；放送信息、话数、分类、来源、地区、制作公司、导演；标签云；可展开的简介；章节列表；角色与声优横向滚动；关联作品；浮动按钮「问问 AI」，点击后跳转 /chat 并预填问题；NSFW 被拦截时显示提示页和「前往设置」按钮
+4. /chat（AI 助手）：左侧会话历史（可折叠、可删除），右侧对话区；空状态显示 4 个推荐提问；用 fetch + ReadableStream 解析 SSE；工具调用时显示状态动画（如"🔍 正在检索站内动画库…"）；回复用 Markdown 渲染（react-markdown）；[spoiler] 内容模糊显示、点击解除；anime_refs 渲染为横向番剧小卡片，点击跳转详情；回复底部显示来源标识「📚 站内数据」/「🌐 网络搜索」并附链接；输入框 Enter 发送、Shift+Enter 换行，支持停止生成
+
+# 十、配置与部署
+
+## .env.example（需包含并注释说明）
+DATABASE_URL、REDIS_URL、MEILI_URL、MEILI_MASTER_KEY、BANGUMI_USER_AGENT、BANGUMI_ACCESS_TOKEN（可选）、LLM_BASE_URL、LLM_API_KEY、LLM_MODEL、EMBEDDING_BASE_URL、EMBEDDING_API_KEY、EMBEDDING_MODEL、EMBEDDING_DIM、EMBED_MIN_COLLECTS、TAVILY_API_KEY（可选）、TZ=Asia/Shanghai、NEXT_PUBLIC_API_BASE
+
+## docker-compose.yml
+服务：postgres（pgvector/pgvector:pg16 镜像）、redis、meilisearch、backend（启动时自动执行 alembic upgrade head）、worker（同一镜像，入口为 scheduler）、frontend；配置健康检查、依赖顺序和数据卷持久化
+
+## README.md
+包括项目介绍、架构图（ASCII）、快速启动步骤（复制 .env → docker compose up -d → 首次导入数据的命令 → 访问地址）、手动执行各个同步任务的命令、常见问题（导入耗时、向量化成本、更换大模型的方法）
+
+# 十一、代码质量要求
+- 全部使用类型注解；关键函数写中文 docstring
+- 使用 logging 输出结构化日志；不得在代码中硬编码任何密钥
+- 数据库写入使用批量 upsert（INSERT ... ON CONFLICT），每批 1000 条
+- 为 season.py、wiki_parser.py、tag_mapping.py 编写 pytest 单元测试（backend/tests/）
+- 前端组件按职责拆分，类型定义集中放在 types/ 目录
+
+# 十二、输出要求
+1. 先用 10 行以内概述整体架构，然后按第三节目录顺序逐个输出文件
+2. 每个文件以「### 文件路径」作为标题，接完整代码块
+3. 不得省略任何文件内容，不得使用"…"或"同上"
+4. 如果输出长度到达上限，在当前文件结束处停下并注明「待续：下一个文件为 xxx」，我回复"继续"后从该文件接着输出

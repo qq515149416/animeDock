@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>番剧坞 · 动画资讯</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>
+  const rgb = (v) => `rgb(var(${v}) / <alpha-value>)`;
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          bg: rgb('--bg'), card: rgb('--card'), elev: rgb('--elev'), elev2: rgb('--elev2'),
+          fg: rgb('--fg'), mut: rgb('--mut'), line: rgb('--line'),
+          sakura: rgb('--sakura'), ind: rgb('--ind'),
+        },
+        opacity: { 7: '.07', 8: '.08', 12: '.12', 15: '.15', 35: '.35', 45: '.45', 55: '.55', 65: '.65', 85: '.85' },
+        boxShadow: {
+          card: '0 1px 2px rgb(0 0 0 / .06), 0 4px 14px -6px rgb(0 0 0 / var(--sh))',
+          cardh: '0 2px 4px rgb(0 0 0 / .08), 0 18px 36px -12px rgb(0 0 0 / var(--shh))',
+        },
+        fontFamily: { sans: ['"PingFang SC"', '"Noto Sans SC"', '"Hiragino Sans GB"', '"Microsoft YaHei"', 'sans-serif'] },
+      },
+    },
+  };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: 247 248 250; --card: 255 255 255; --elev: 239 241 245; --elev2: 226 229 236;
+    --fg: 22 25 33; --mut: 112 118 132; --line: 228 231 237;
+    --sakura: 255 107 157; --ind: 91 108 255; --sh: .08; --shh: .16;
+  }
+  .dark {
+    --bg: 15 17 21; --card: 24 27 34; --elev: 32 36 45; --elev2: 44 49 60;
+    --fg: 236 238 243; --mut: 136 143 160; --line: 40 44 54; --sh: .35; --shh: .55;
+  }
+  html, body { background: rgb(var(--bg)); color: rgb(var(--fg)); }
+  body { font-family: "PingFang SC", "Noto Sans SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; -webkit-font-smoothing: antialiased; }
+  h1, h2, h3, h4 { text-wrap: pretty; }
+  * { -webkit-tap-highlight-color: transparent; }
+  ::selection { background: rgb(var(--sakura) / .35); }
+  .glass { background: rgb(var(--bg) / .72); backdrop-filter: saturate(160%) blur(18px); -webkit-backdrop-filter: saturate(160%) blur(18px); }
+  .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { scrollbar-width: none; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; } ::-webkit-scrollbar-thumb { background: rgb(var(--elev2)); border-radius: 10px; border: 3px solid rgb(var(--bg)); }
+  .hero-grad { background:
+      radial-gradient(60% 120% at 0% 0%, rgb(var(--sakura) / .22), transparent 60%),
+      radial-gradient(50% 100% at 100% 0%, rgb(var(--ind) / .22), transparent 60%); }
+  .hero-dots { background-image: radial-gradient(rgb(var(--fg) / .08) 1px, transparent 1px); background-size: 18px 18px;
+      mask-image: linear-gradient(to bottom, #000, transparent); -webkit-mask-image: linear-gradient(to bottom, #000, transparent); }
+  .lib-grad { background: radial-gradient(40% 100% at 10% 0%, rgb(var(--ind) / .14), transparent 70%), radial-gradient(30% 90% at 40% 0%, rgb(var(--sakura) / .1), transparent 70%); }
+  .ai-grad { background:
+      radial-gradient(40% 50% at 85% 0%, rgb(var(--ind) / .16), transparent 70%),
+      radial-gradient(40% 50% at 20% 100%, rgb(var(--sakura) / .12), transparent 70%); }
+  .cover-grain { background-image: repeating-linear-gradient(135deg, rgb(255 255 255 / .05) 0 1px, transparent 1px 7px); mix-blend-mode: overlay; }
+  .skel { background: linear-gradient(90deg, rgb(var(--elev)) 25%, rgb(var(--elev2)) 50%, rgb(var(--elev)) 75%); background-size: 200% 100%; animation: skel 1.3s ease-in-out infinite; }
+  @keyframes skel { from { background-position: 100% 0 } to { background-position: -100% 0 } }
+  .fade-in { animation: fadeIn .28s ease-out both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px) } to { opacity: 1; transform: none } }
+  .pop-in { animation: popIn .2s ease-out both; }
+  @keyframes popIn { from { opacity: 0; transform: scale(.97) translateY(-4px) } to { opacity: 1; transform: none } }
+  .slide-up { animation: slideUp .26s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes slideUp { from { transform: translateY(100%) } to { transform: none } }
+  .pulse-dot { animation: pulse 1.6s ease-in-out infinite; box-shadow: 0 0 0 0 rgb(var(--sakura) / .6); }
+  @keyframes pulse { 70% { box-shadow: 0 0 0 7px rgb(var(--sakura) / 0) } 100% { box-shadow: 0 0 0 0 rgb(var(--sakura) / 0) } }
+  .spin { animation: spin .8s linear infinite; } @keyframes spin { to { transform: rotate(360deg) } }
+  .shimmer-text { background: linear-gradient(90deg, rgb(var(--mut)) 30%, rgb(var(--fg)) 50%, rgb(var(--mut)) 70%); background-size: 200% 100%;
+      -webkit-background-clip: text; background-clip: text; color: transparent; animation: skel 1.6s linear infinite; }
+  .caret { display: inline-block; width: 8px; height: 18px; border-radius: 2px; background: rgb(var(--sakura)); animation: blink 1s steps(2) infinite; vertical-align: middle; }
+  @keyframes blink { 50% { opacity: 0 } }
+  .float-a { animation: floaty 3s ease-in-out infinite; } .float-b { animation: floaty 3.6s ease-in-out infinite reverse; }
+  @keyframes floaty { 50% { transform: translateY(-6px) } }
+  select option { background: rgb(var(--card)); color: rgb(var(--fg)); }
+</style>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="data.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" src="ui.jsx"></script>
+<script src="ai-engine.js"></script>
+<script type="text/babel" src="shell.jsx"></script>
+<script type="text/babel" src="page-daily.jsx"></script>
+<script type="text/babel" src="page-library.jsx"></script>
+<script type="text/babel" src="page-detail.jsx"></script>
+<script type="text/babel" src="page-ai.jsx"></script>
+<script type="text/babel">
+function parseHash() {
+  const h = location.hash.replace(/^#\/?/, '');
+  const [path, qs] = h.split('?');
+  const seg = path.split('/');
+  const params = Object.fromEntries(new URLSearchParams(qs || ''));
+  if (seg[0] === 'detail' && seg[1]) return { page: 'detail', params: { id: Number(seg[1]) } };
+  if (['daily', 'library', 'ai'].includes(seg[0])) return { page: seg[0], params };
+  return { page: 'daily', params: {} };
+}
+function toHash(page, params) {
+  if (page === 'detail') return `#/detail/${params.id}`;
+  if (page === 'library' && params.q) return `#/library?q=${encodeURIComponent(params.q)}`;
+  return `#/${page}`;
+}
+const LS = { get: (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set: (k, v) => localStorage.setItem(k, JSON.stringify(v)) };
+
+function App() {
+  const [route, setRoute] = useState(() => ({ ...parseHash(), key: 0 }));
+  const [theme, setThemeS] = useState(() => LS.get('fjw.theme', 'dark'));
+  const [nsfw, setNsfw] = useState(() => LS.get('fjw.nsfw', false));
+  const [ageOk, setAgeOk] = useState(() => LS.get('fjw.ageOk', false));
+  const [ageGate, setAgeGate] = useState(false);
+  const [revealed, setRevealed] = useState(new Set());
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [prefs, setPrefs] = useState(() => LS.get('fjw.prefs', {}));
+
+  useEffect(() => { document.documentElement.classList.toggle('dark', theme === 'dark'); LS.set('fjw.theme', theme); }, [theme]);
+  useEffect(() => { LS.set('fjw.nsfw', nsfw); if (!nsfw) setRevealed(new Set()); }, [nsfw]);
+  useEffect(() => {
+    const h = () => setRoute(r => ({ ...parseHash(), key: r.key + 1 }));
+    window.addEventListener('popstate', h);
+    return () => window.removeEventListener('popstate', h);
+  }, []);
+  useEffect(() => {
+    const h = (e) => {
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (e.key === '/' && !['input', 'textarea', 'select'].includes(tag) && !e.target.isContentEditable) { e.preventDefault(); setSearchOpen(true); }
+    };
+    window.addEventListener('keydown', h);
+    return () => window.removeEventListener('keydown', h);
+  }, []);
+
+  const go = useCallback((page, params = {}) => {
+    const hash = toHash(page, params);
+    if (location.hash !== hash) history.pushState(null, '', hash);
+    setRoute(r => ({ page, params, key: r.key + 1 }));
+    window.scrollTo({ top: 0 });
+  }, []);
+
+  const requestNsfw = useCallback((v) => {
+    if (v && !ageOk) { setAgeGate(true); return; }
+    setNsfw(v);
+  }, [ageOk]);
+  const confirmAge = () => { setAgeOk(true); LS.set('fjw.ageOk', true); setNsfw(true); setAgeGate(false); };
+
+  const visibleList = useMemo(() => DATA.list.filter(a => nsfw || !a.nsfw), [nsfw]);
+  const ctx = {
+    route, go, theme, setTheme: setThemeS, nsfw, requestNsfw, ageGate, confirmAge, cancelAge: () => setAgeGate(false),
+    revealed, reveal: (id) => setRevealed(s => new Set(s).add(id)),
+    searchOpen, openSearch: () => setSearchOpen(true), closeSearch: () => setSearchOpen(false), visibleList,
+    prefs, setPref: (k, v) => setPrefs(p => { const n = { ...p, [k]: v }; LS.set('fjw.prefs', n); return n; }),
+  };
+  const isAI = route.page === 'ai';
+  return (
+    <AppCtx.Provider value={ctx}>
+      <div className="min-h-screen">
+        <TopNav />
+        <main data-screen-label={route.page} className={isAI ? '' : 'pb-20 md:pb-0'}>
+          {route.page === 'daily' && <DailyPage />}
+          {route.page === 'library' && <LibraryPage key="lib" />}
+          {route.page === 'detail' && <DetailPage />}
+          {route.page === 'ai' && <AIPage />}
+        </main>
+        {!isAI && <Footer />}
+        {!isAI && <div className="h-16 md:hidden" />}
+        <MobileTabBar />
+        <SearchPalette />
+        <AgeGate />
+      </div>
+    </AppCtx.Provider>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
