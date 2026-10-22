@@ -27,6 +27,7 @@ async def pipeline_db(monkeypatch):
         schema = "pipeline_" + uuid4().hex
         await connection.execute(text(f'CREATE SCHEMA "{schema}"'))
         await connection.execute(text(f'SET LOCAL search_path TO "{schema}", public'))
+        await connection.execution_options(schema_translate_map={None: schema})
         await connection.run_sync(Base.metadata.create_all)
         factory = lambda: AsyncSession(bind=connection, expire_on_commit=False, join_transaction_mode="create_savepoint")
         monkeypatch.setattr(import_module("app.worker.import_archive"), "SessionLocal", factory)

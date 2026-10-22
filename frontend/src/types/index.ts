@@ -18,6 +18,8 @@ export interface Anime {
   air_weekday: number | null;
   air_date: string | null;
   image_url: string | null;
+  fallback_image_url?: string;
+  fallback_image_provider?: CatalogProvider | null;
   studio: string;
   director: string;
   nsfw: boolean;
@@ -74,6 +76,35 @@ export interface AnimeDetail extends Anime {
   characters: Character[];
   persons: Person[];
   relations: RelatedAnime[];
+  banner_image_url?: string;
+  field_sources?: Record<string, CatalogProvider>;
+  external_ratings?: CatalogRating[];
+  external_sources?: CatalogSource[];
+  episodes_partial?: boolean;
+}
+export type CatalogProvider = "myanimelist" | "kitsu" | "anilist";
+export interface CatalogSource {
+  provider: CatalogProvider;
+  label: string;
+  external_id: string;
+  url: string;
+  updated_at: string;
+  match_method: string;
+}
+export interface CatalogRating extends CatalogSource {
+  score: number | null;
+  scale: number;
+  rank: number | null;
+  votes: number | null;
+}
+export interface AnimeEnrichment {
+  anime_id: number;
+  pending: boolean;
+  ratings: CatalogRating[];
+  sources: CatalogSource[];
+  supplement: Partial<AnimeDetail>;
+  field_sources: Record<string, CatalogProvider>;
+  providers: { provider: CatalogProvider; label: string; status: string }[];
 }
 export interface CalendarDay {
   weekday: number;

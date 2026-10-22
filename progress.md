@@ -1,4 +1,12 @@
 # Progress
+- 2026-10-22 封面覆盖修复完成：517532归档image_url为空但官方图片端点有图，外站补充改为fallback_image_url/provider，原封面加载成功不替换；兼容旧缓存中的外站主图。回归先失败后通过；131项后端（真实PG）、18项前端、类型与Docker构建通过，独立审查无待修复问题。本地backend/worker/frontend已更新，6容器healthy；浏览器原图宽1250，列表和详情地址一致；仅屏蔽官方原图时切换MAL宽600，恢复后回到官方原图。专用浏览器任务已关闭。
+- 最终一期验收：独立审查3项Important全部修复并验证，后端129通过（真实PG），前端15通过，类型与Docker生产构建通过；0002已迁移，本地backend/worker/frontend已更新且6容器healthy。30部样本23部至少一源匹配，报告落盘docs/verification；其余7部明确未可靠匹配。真实Kitsu26章节校验通过，NSFW两个接口403，凭据响应检查无泄漏，热缓存14–34ms。桌面/手机截图已查看；浏览器QA已完成并关闭专用任务，最终差异检查及编译通过后交付。
+- 独立审查完成：无Critical，3项Important均已补回归并按RED→GREEN修复：部分日期不再进入typed响应（保留可用年份供匹配）；三种适配器入口统一隔离畸形嵌套字段；worker在回滚前快照化报告字段避免MissingGreenlet。审查未裁定的平台条款沿用用户已确认个人自用、按需查询范围；真实匹配和界面验收由主代理继续验证。
+- 首批5部真实样本：MAL/Kitsu/AniList各匹配4部，Steins;Gate因Bangumi与外站集数差异保留未匹配。独立0002迁移已运行。Docker镜像构建成功，审查修复后会重建后端再启用。后续计划验证30部及桌面/手机详情、缓存热请求和NSFW阻断。
+- 2026-10-22 一期实施：用户已确认个人自用并授权实施。完成三个只读适配器、SecretStr凭据配置、Redis跨进程限流/429冷却、保守匹配、0002快照表与只补空缺合并、独立enrichment接口、最近访问有界刷新、来源卡片与异步UI。MAL凭据真实公开查询成功，secret没有发送。TDD：适配器13项、合并9项及前端5项均先见失败再通过；新增Kitsu缺失章节回退测试先失败后通过（最多100话，部分收录标记，负数展示ID不入章节表）。
+- 验证进展：backend基线80通过9跳过；首次完整PG测试4项旧测试失败，定位create_all检查到了public已有表，测试连接添加schema_translate_map后115项全通过。全套前端基线10通过，5项新增合并测试通过，TypeScript与生产构建通过。后续章节改动正在重跑。默认沙箱禁止监听回环端口导致2项前端代理测试EPERM，提权后全通过。
+- 工作方式：当前工作区直接执行，不切换分支、不提交；原有anime-detail.tsx4行修改保留。调研及代码不输出.env凭据。待本地容器更新、小样本验收和独立代码审查。
+- 2026-10-21: 完成三平台 API 可行性分析。读取项目模型/导入/worker/API/AI字段白名单与官方 API 文档、AniList Terms/限流/内容说明、MAL API License/OAuth、Kitsu Terms。仅执行每个平台各一次无凭据公开查询：AniList200（30/min）、Kitsu200（含跨站映射）、MAL403（无ClientID）；没有登录、申请应用、导入数据、运行同步任务或修改产品代码。调研材料保存在 /private/tmp/animeDock-api-assessment；最终方案在聊天提交，等待用户确认。原有 frontend/src/components/anime-detail.tsx 修改保持不动。
 - 2026-10-19: Read full user requirements and design handoff. Empty workspace inspected. Planning and implementation started.
 - Frontend initial routes/components implemented; TypeScript check passes. Dependency install succeeded using official npm registry after configured mirror DNS failed.
 - SSE test caught CRLF delimiters split across byte chunks; parser now normalizes the full accumulated buffer and tests rerun.

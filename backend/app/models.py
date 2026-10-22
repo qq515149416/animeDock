@@ -68,6 +68,21 @@ class Episode(Base):
     description: Mapped[str] = mapped_column(Text, default='')
 
 
+class AnimeExternalSource(Base):
+    """Expiring public metadata; canonical Bangumi rows are never overwritten."""
+
+    __tablename__ = 'anime_external_source'
+    anime_id: Mapped[int] = mapped_column(ForeignKey('anime.id', ondelete='CASCADE'), primary_key=True)
+    provider: Mapped[str] = mapped_column(String(30), primary_key=True)
+    external_id: Mapped[str | None] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(20), default='unmatched')
+    match_method: Mapped[str] = mapped_column(String(30), default='')
+    payload: Mapped[dict[str, Any]] = mapped_column(JSONB, default=dict, server_default=text("'{}'::jsonb"))
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
+    last_accessed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), index=True)
+
+
 class AnimeRelation(Base):
     """动画之间的关系，目标必须是已入库动画。"""
 

@@ -11,6 +11,13 @@ export function getAnimeCoverUrl(
   return `https://api.bgm.tv/v0/subjects/${anime.id}/image?type=large`;
 }
 
+export function getAnimeCoverCandidates(
+  anime: Pick<Anime, "id" | "image_url" | "fallback_image_url">,
+  demoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true",
+): string[] {
+  return [...new Set([getAnimeCoverUrl(anime, demoMode), anime.fallback_image_url?.trim()].filter((url): url is string => !!url))];
+}
+
 export interface PortraitImages {
   large?: string;
   medium?: string;

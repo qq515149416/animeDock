@@ -34,6 +34,23 @@ docker compose exec worker python -m app.worker.import_archive
 
 ## 手动数据任务
 
+封面始终优先使用原图（包括数据库字段为空时的 Bangumi 官方图片接口），列表和详情采用相同规则。外站图片保存在独立的备用字段中，仅在原图实际加载失败后使用，不会因为补充数据到达就替换已有封面。
+
+个人自用的多平台补充：在根目录 `.env` 设置 `MYANIMELIST_CLIENT_ID`（以及后续账户功能预留的 `MYANIMELIST_CLIENT_SECRET`），重建 backend/worker/frontend 即可。公开作品读取仅发送 Client ID，secret 不参与请求；凭据不会传入前端。`EXTERNAL_CATALOG_ENABLED` 可整体关闭，`MYANIMELIST_ENABLED/KITSU_ENABLED/ANILIST_ENABLED` 可分别关闭。
+
+详情页先显示 Bangumi，再通过 `/api/anime/{id}/enrichment` 加载各平台独立评分、原站链接和缺失字段。补充优先级为 MAL → Kitsu → AniList，覆盖简介、原名/别名、封面/背景图、日期/话数、类型、制作公司，以及 AniList 可提供的导演/角色声优/制作人员；只填空缺或“其他”，不覆盖有效的 Bangumi 值，也不改写 Bangumi 评分、主键或章节关系。外语简介保持原文，页面标明来源；已有章节和本地关联仍由 Bangumi 提供。Bangumi 完全缺失章节列表时，可补充 Kitsu 的前100话并标记来源及“部分收录”；这些章节仅用于展示，不写入 Bangumi 章节表。
+
+仅接受名称与类型/日期/集数相互印证的唯一候选，或已验证跨站 ID；冲突和歧义保留为“未可靠匹配”。快照独立保存在 `anime_external_source` 表，最长24小时有效；未匹配缓存6小时，临时失败缓存5分钟。每小时第15分钟最多刷新20个最近14天访问过的条目，30天未访问的快照清理；不会遍历或镜像第三方全库。跨进程共享限流，AniList 按每分钟30次约束，429 遵循 Retry-After。API 和其他平台故障时，Bangumi 详情可继续使用。
+
+这些默认开关用于已确认的个人自用环境。公开或商业部署前，须根据各平台条款落实用途、展示与缓存权限：AniList 尤其限制批量采集和同类追踪服务；MAL 商业应用及内容改动存在额外限制。此版本不实现第三方账户登录、追番同步或自动翻译。
+
+```bash
+# 可选：验证最多50部作品的小样本；含各平台匹配状态和补充字段。
+docker compose exec worker python -m app.worker.refresh_external --sample 30 --report /tmp/external-sample.json
+# 日常仅刷新最近访问且已过期的快照。
+docker compose exec worker python -m app.worker.refresh_external --limit 20
+```
+
 ```bash
 # 全量导入、原子重建搜索索引、按内容 hash 增量生成向量
 docker compose exec worker python -m app.worker.import_archive
@@ -103,6 +120,7 @@ python -m app.worker.scheduler
 | GET | `/api/anime/search` | `q/category/source/region/genres/year/season/min_score/sort/page/page_size/nsfw` |
 | GET | `/api/anime/suggest?q=...` | 前八条联想 |
 | GET | `/api/anime/{id}` | 详情，NSFW 被拦截为 403 `NSFW_BLOCKED` |
+| GET | `/api/anime/{id}/enrichment` | 多平台独立评分、原站链接、只补空缺字段及来源；同样校验 NSFW |
 | GET | `/api/meta/filters` | 枚举、可见作品年份、当前季度 |
 | POST | `/api/chat` | `{client_id,session_id?,message,nsfw}`，SSE |
 | GET | `/api/chat/sessions?client_id=...` | 客户端会话列表 |

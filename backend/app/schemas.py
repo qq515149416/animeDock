@@ -52,6 +52,8 @@ class EpisodeResponse(APIModel):
     airdate: date | None = None
     duration: str = ''
     description: str = ''
+    source_provider: str = 'bangumi'
+    external_id: str | None = None
 
 
 class RelatedAnime(AnimeCard):
@@ -74,6 +76,23 @@ class AnimeDetail(AnimeCard):
     characters: list[dict[str, Any]] = Field(default_factory=list)
     persons: list[dict[str, Any]] = Field(default_factory=list)
     enrichment_available: bool = True
+    episodes_partial: bool = False
+    banner_image_url: str = ''
+    fallback_image_url: str = ''
+    fallback_image_provider: str | None = None
+    field_sources: dict[str, str] = Field(default_factory=dict)
+    external_ratings: list[dict[str, Any]] = Field(default_factory=list)
+    external_sources: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class AnimeEnrichment(APIModel):
+    anime_id: int
+    pending: bool = False
+    ratings: list[dict[str, Any]] = Field(default_factory=list)
+    sources: list[dict[str, Any]] = Field(default_factory=list)
+    supplement: dict[str, Any] = Field(default_factory=dict)
+    field_sources: dict[str, str] = Field(default_factory=dict)
+    providers: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class SearchResponse(APIModel):

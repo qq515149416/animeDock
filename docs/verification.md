@@ -39,3 +39,19 @@
 前端`.env.local`仅用于设计预览；生产Docker默认关闭示例模式。收藏、观看记录和提醒是浏览器本地功能，提醒不发送系统推送。测试资源和独立schema已清理。
 
 最终镜像运行复验：`/icon.svg`、`/api/health`、`/anime`均200。数据库anime与chat_session均0条，验收未污染正式底库；初次启动worker仍会触发空库自动导入。临时验收容器和本机开发服务在完成后停止，镜像与数据卷保留；按README启动即可。
+# 2026-10-22 Personal catalog enrichment
+
+- Approved scope: private use, public metadata only; missing Bangumi fields are overlaid with attribution. Canonical IDs/ratings/episodes/relations are preserved. No OAuth/account sync, translation, or external full-catalog import.
+- Added migration 0002 and independently expiring source snapshots. Local deployment uses existing `.env`; public MAL calls use Client ID only. Neither credential appeared in the tested API responses.
+- Tests: 129 backend tests passed with real PostgreSQL and isolated schemas; 15 frontend tests passed. TypeScript and production Docker builds passed. A fresh read-only reviewer identified partial dates, malformed nested responses, and expired ORM access after rollback; all three were reproduced by failing tests and fixed.
+- Bounded live sample: 30 titles across TV/movie/OVA/WEB/other; 23 matched at least one source (MAL18, Kitsu21, AniList22). Seven were intentionally left unmatched due to identity/format/episode differences. This is a sample, not a full-catalog coverage claim. Report: `docs/verification/external-catalog-sample-2026-10-22.json`.
+- Live local checks: six containers healthy, 31,178 canonical anime unchanged; cached enrichment response 14–34ms; original and enrichment endpoints return `403 NSFW_BLOCKED` for sensitive title8631 with NSFW off. Kitsu chapter pagination returned26 valid display-only episodes without database insertion.
+- Browser: `/anime/160209` retains the Chinese Bangumi summary/8.1 score and shows distinct three-platform scores/source links. Bangumi people win over available external people. Desktop and390px phone checks show no horizontal overflow; source cards have accessible links and loading/error states.
+- Screenshots: `docs/screenshots/external-catalog-desktop.png`, `docs/screenshots/external-catalog-mobile.png`. Changes remain in the current workspace, without Git commits or publishing.
+
+## 2026-10-22 Cover priority regression
+
+- Reproduced title517532: canonical `image_url` is empty, but the official Bangumi image endpoint returns a real cover. The previous detail overlay incorrectly replaced it with a MAL image while library cards kept the original.
+- External covers now use separate `fallback_image_url`/`fallback_image_provider` fields. The shared image component retains the original cover and only tries the external image after an image load error. Legacy attributed main-image overlays are normalized before rendering.
+- Regression tests were observed failing before the fix. Final checks:131 backend tests with real PostgreSQL,18 frontend tests, strict TypeScript, and both production Docker builds passed. Read-only review found no actionable issues. Updated local backend/worker/frontend; all six containers healthy.
+- Browser: library and detail both loaded `https://api.bgm.tv/v0/subjects/517532/image?type=large` at naturalWidth1250 after enrichment. Blocking this URL only in the dedicated browser page caused fallback to MAL at naturalWidth600. Removing the block and reloading restored the Bangumi image. Network overrides were reset and the dedicated browser task was closed.

@@ -41,6 +41,7 @@ async def database(monkeypatch):
         schema = 'test_' + uuid4().hex
         await connection.execute(text(f'CREATE SCHEMA "{schema}"'))
         await connection.execute(text(f'SET LOCAL search_path TO "{schema}", public'))
+        await connection.execution_options(schema_translate_map={None: schema})
         await connection.run_sync(Base.metadata.create_all)
         async with AsyncSession(bind=connection, expire_on_commit=False) as session:
             session.add_all([

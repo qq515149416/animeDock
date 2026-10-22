@@ -1,6 +1,7 @@
 import type {
   Anime,
   AnimeDetail,
+  AnimeEnrichment,
   CalendarDay,
   MetaFilters,
   SearchResult,
@@ -115,6 +116,10 @@ export async function getAnime(
 }
 export async function getMeta(nsfw: boolean): Promise<MetaFilters> {
   return DEMO_MODE ? DEMO_META : request(`/meta/filters?nsfw=${nsfw}`);
+}
+export async function getAnimeEnrichment(id: number, nsfw: boolean): Promise<AnimeEnrichment> {
+  if (DEMO_MODE) return { anime_id: id, pending: false, ratings: [], sources: [], supplement: {}, field_sources: {}, providers: [] };
+  return request(`/anime/${id}/enrichment?nsfw=${nsfw}`);
 }
 export async function getSessions(
   clientId: string,

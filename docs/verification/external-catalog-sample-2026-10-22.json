@@ -1,0 +1,1188 @@
+{
+  "sample": true,
+  "count": 30,
+  "matched": {
+    "myanimelist": 18,
+    "kitsu": 21,
+    "anilist": 22
+  },
+  "items": [
+    {
+      "id": 10380,
+      "name": "STEINS;GATE",
+      "category": "TV",
+      "sources": [],
+      "supplemented_fields": {},
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "unmatched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "unmatched"
+        }
+      ]
+    },
+    {
+      "id": 328609,
+      "name": "ぼっち・ざ・ろっく！",
+      "category": "TV",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "47917",
+          "url": "https://myanimelist.net/anime/47917"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "44196",
+          "url": "https://kitsu.app/anime/44196"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "130003",
+          "url": "https://anilist.co/anime/130003"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 400602,
+      "name": "葬送のフリーレン",
+      "category": "TV",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "52991",
+          "url": "https://myanimelist.net/anime/52991"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "46474",
+          "url": "https://kitsu.app/anime/46474"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "154587",
+          "url": "https://anilist.co/anime/154587"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 9717,
+      "name": "魔法少女まどか☆マギカ",
+      "category": "TV",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "9756",
+          "url": "https://myanimelist.net/anime/9756"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "9756",
+          "url": "https://anilist.co/anime/9756"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "banner_image_url": "anilist",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "unmatched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 27364,
+      "name": "氷菓",
+      "category": "TV",
+      "sources": [
+        {
+          "provider": "kitsu",
+          "external_id": "6686",
+          "url": "https://kitsu.app/anime/6686"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "12189",
+          "url": "https://anilist.co/anime/12189"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "kitsu",
+        "banner_image_url": "kitsu",
+        "studio": "anilist",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unavailable"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 265,
+      "name": "新世紀エヴァンゲリオン",
+      "category": "TV",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "30",
+          "url": "https://myanimelist.net/anime/30"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "21",
+          "url": "https://kitsu.app/anime/21"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "30",
+          "url": "https://anilist.co/anime/30"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 160209,
+      "name": "君の名は。",
+      "category": "剧场版",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "32281",
+          "url": "https://myanimelist.net/anime/32281"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "11614",
+          "url": "https://kitsu.app/anime/11614"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "21519",
+          "url": "https://anilist.co/anime/21519"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "studio": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 311,
+      "name": "千と千尋の神隠し",
+      "category": "剧场版",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "199",
+          "url": "https://myanimelist.net/anime/199"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "176",
+          "url": "https://kitsu.app/anime/176"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "199",
+          "url": "https://anilist.co/anime/199"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "studio": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 3375,
+      "name": "涼宮ハルヒの消失",
+      "category": "剧场版",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "7311",
+          "url": "https://myanimelist.net/anime/7311"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "4938",
+          "url": "https://kitsu.app/anime/4938"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "7311",
+          "url": "https://anilist.co/anime/7311"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "studio": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 927,
+      "name": "秒速5センチメートル",
+      "category": "剧场版",
+      "sources": [
+        {
+          "provider": "kitsu",
+          "external_id": "1517",
+          "url": "https://kitsu.app/anime/1517"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "1689",
+          "url": "https://anilist.co/anime/1689"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "kitsu",
+        "banner_image_url": "kitsu",
+        "studio": "anilist",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 216371,
+      "name": "リズと青い鳥",
+      "category": "剧场版",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "35677",
+          "url": "https://myanimelist.net/anime/35677"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "13618",
+          "url": "https://kitsu.app/anime/13618"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "100178",
+          "url": "https://anilist.co/anime/100178"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 6049,
+      "name": "新世紀エヴァンゲリオン劇場版 Air/まごころを、君に",
+      "category": "剧场版",
+      "sources": [],
+      "supplemented_fields": {},
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "unmatched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "unmatched"
+        }
+      ]
+    },
+    {
+      "id": 822,
+      "name": "フリクリ",
+      "category": "OVA",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "227",
+          "url": "https://myanimelist.net/anime/227"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "202",
+          "url": "https://kitsu.app/anime/202"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "227",
+          "url": "https://anilist.co/anime/227"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "genres": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 37873,
+      "name": "CLANNAD もうひとつの世界 智代編",
+      "category": "OVA",
+      "sources": [],
+      "supplemented_fields": {},
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "unmatched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "unmatched"
+        }
+      ]
+    },
+    {
+      "id": 213816,
+      "name": "ReLIFE 完結編",
+      "category": "OVA",
+      "sources": [
+        {
+          "provider": "anilist",
+          "external_id": "98635",
+          "url": "https://anilist.co/anime/98635"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "anilist",
+        "banner_image_url": "anilist",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "unmatched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 1728,
+      "name": "るろうに剣心 -明治剣客浪漫譚- 追憶編",
+      "category": "OVA",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "44",
+          "url": "https://myanimelist.net/anime/44"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "26",
+          "url": "https://kitsu.app/anime/26"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "44",
+          "url": "https://anilist.co/anime/44"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "studio": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 37874,
+      "name": "CLANNAD 〜AFTER STORY〜もうひとつの世界 杏編",
+      "category": "OVA",
+      "sources": [],
+      "supplemented_fields": {},
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "unmatched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "unmatched"
+        }
+      ]
+    },
+    {
+      "id": 18882,
+      "name": "カーニバル・ファンタズム",
+      "category": "OVA",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "10012",
+          "url": "https://myanimelist.net/anime/10012"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "5992",
+          "url": "https://kitsu.app/anime/5992"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "10012",
+          "url": "https://anilist.co/anime/10012"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 309311,
+      "name": "Cyberpunk: Edgerunners",
+      "category": "WEB",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "42310",
+          "url": "https://myanimelist.net/anime/42310"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "43248",
+          "url": "https://kitsu.app/anime/43248"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "120377",
+          "url": "https://anilist.co/anime/120377"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 604826,
+      "name": "超かぐや姫！",
+      "category": "WEB",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "62896",
+          "url": "https://myanimelist.net/anime/62896"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "50322",
+          "url": "https://kitsu.app/anime/50322"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "201903",
+          "url": "https://anilist.co/anime/201903"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 211311,
+      "name": "DEVILMAN crybaby",
+      "category": "WEB",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "35120",
+          "url": "https://myanimelist.net/anime/35120"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "13230",
+          "url": "https://kitsu.app/anime/13230"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "98460",
+          "url": "https://anilist.co/anime/98460"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "studio": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 527620,
+      "name": "タコピーの原罪",
+      "category": "WEB",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "60489",
+          "url": "https://myanimelist.net/anime/60489"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "49392",
+          "url": "https://kitsu.app/anime/49392"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "185407",
+          "url": "https://anilist.co/anime/185407"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "studio": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 335036,
+      "name": "Arcane",
+      "category": "WEB",
+      "sources": [
+        {
+          "provider": "kitsu",
+          "external_id": "45469",
+          "url": "https://kitsu.app/anime/45469"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "kitsu",
+        "banner_image_url": "kitsu"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "unmatched"
+        }
+      ]
+    },
+    {
+      "id": 234349,
+      "name": "衛宮さんちの今日のごはん",
+      "category": "WEB",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "37033",
+          "url": "https://myanimelist.net/anime/37033"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "14154",
+          "url": "https://kitsu.app/anime/14154"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "100855",
+          "url": "https://anilist.co/anime/100855"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "studio": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 1171,
+      "name": "東方夢想夏郷",
+      "category": "其他",
+      "sources": [],
+      "supplemented_fields": {},
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "unmatched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "unmatched"
+        }
+      ]
+    },
+    {
+      "id": 195249,
+      "name": "SHELTER",
+      "category": "其他",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "34240",
+          "url": "https://myanimelist.net/anime/34240"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "12668",
+          "url": "https://kitsu.app/anime/12668"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "97731",
+          "url": "https://anilist.co/anime/97731"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "category": "myanimelist",
+        "studio": "myanimelist",
+        "banner_image_url": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 343607,
+      "name": "VOY@GER",
+      "category": "其他",
+      "sources": [
+        {
+          "provider": "myanimelist",
+          "external_id": "49661",
+          "url": "https://myanimelist.net/anime/49661"
+        },
+        {
+          "provider": "kitsu",
+          "external_id": "49727",
+          "url": "https://kitsu.app/anime/49727"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "137075",
+          "url": "https://anilist.co/anime/137075"
+        }
+      ],
+      "supplemented_fields": {
+        "image_url": "myanimelist",
+        "category": "myanimelist",
+        "studio": "myanimelist",
+        "banner_image_url": "anilist",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "matched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 432404,
+      "name": "Fate/Grand Order Memorial Movie 2023",
+      "category": "其他",
+      "sources": [
+        {
+          "provider": "kitsu",
+          "external_id": "49184",
+          "url": "https://kitsu.app/anime/49184"
+        },
+        {
+          "provider": "anilist",
+          "external_id": "180744",
+          "url": "https://anilist.co/anime/180744"
+        }
+      ],
+      "supplemented_fields": {
+        "aliases": "kitsu",
+        "image_url": "kitsu",
+        "category": "kitsu",
+        "genres": "kitsu",
+        "characters": "anilist",
+        "persons": "anilist"
+      },
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "matched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "matched"
+        }
+      ]
+    },
+    {
+      "id": 41013,
+      "name": "幻想万華鏡 華鳥風月",
+      "category": "其他",
+      "sources": [],
+      "supplemented_fields": {},
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "unmatched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "unmatched"
+        }
+      ]
+    },
+    {
+      "id": 623179,
+      "name": "「ray 超かぐや姫！Version」MV",
+      "category": "其他",
+      "sources": [],
+      "supplemented_fields": {},
+      "providers": [
+        {
+          "provider": "myanimelist",
+          "label": "MyAnimeList",
+          "status": "unmatched"
+        },
+        {
+          "provider": "kitsu",
+          "label": "Kitsu",
+          "status": "unmatched"
+        },
+        {
+          "provider": "anilist",
+          "label": "AniList",
+          "status": "unmatched"
+        }
+      ]
+    }
+  ]
+}

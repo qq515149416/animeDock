@@ -16,6 +16,7 @@ from app.deps import get_meili_client, get_redis
 from app.models import Anime
 from app.worker.import_archive import import_archive
 from app.worker.refresh_current_season import refresh_current_season
+from app.worker.refresh_external import refresh_external
 from app.worker.sync_calendar import sync_calendar
 from app.worker.logging_config import setup_logging
 
@@ -29,6 +30,7 @@ def create_scheduler() -> AsyncIOScheduler:
     scheduler.add_job(import_archive, CronTrigger(day_of_week="mon", hour=4, minute=0, timezone=timezone), id="import_archive", replace_existing=True)
     scheduler.add_job(sync_calendar, CronTrigger(minute=0, timezone=timezone), id="sync_calendar", replace_existing=True)
     scheduler.add_job(refresh_current_season, CronTrigger(hour=5, minute=0, timezone=timezone), id="refresh_current_season", replace_existing=True)
+    scheduler.add_job(refresh_external, CronTrigger(minute=15, timezone=timezone), id="refresh_external", replace_existing=True)
     return scheduler
 
 

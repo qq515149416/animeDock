@@ -1,7 +1,7 @@
 """从环境变量读取并校验服务配置。"""
 from functools import lru_cache
 
-from pydantic import Field, field_validator
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +19,14 @@ class Settings(BaseSettings):
     bangumi_base_url: str = 'https://api.bgm.tv'
     bangumi_user_agent: str = 'fanjuwu/1.0 (self-hosted anime catalog)'
     bangumi_access_token: str = ''
+    myanimelist_client_id: SecretStr = SecretStr('')
+    myanimelist_client_secret: SecretStr = SecretStr('')
+    external_catalog_enabled: bool = True
+    myanimelist_enabled: bool = True
+    kitsu_enabled: bool = True
+    anilist_enabled: bool = True
+    external_catalog_timeout: float = Field(default=8.0, gt=0, le=30)
+    external_catalog_ttl: int = Field(default=86400, ge=60, le=86400)
     archive_manifest_url: str = 'https://raw.githubusercontent.com/bangumi/Archive/master/aux/latest.json'
     llm_base_url: str = 'https://api.openai.com/v1'
     llm_api_key: str = ''

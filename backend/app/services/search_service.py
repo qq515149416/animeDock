@@ -275,4 +275,5 @@ async def get_anime_detail(db: AsyncSession, anime_id: int, nsfw: bool = False) 
     characters, persons, available = await _subject_people(anime_id)
     result = AnimeDetail.model_validate(anime).model_dump(mode='json')
     result.update(episodes=[EpisodeResponse.model_validate(episode).model_dump(mode='json') for episode in episodes], related=[{**AnimeCard.model_validate(row).model_dump(mode='json'), 'relation_type': relation} for row, relation in related], characters=characters, persons=persons, enrichment_available=available)
-    return result
+    from app.services.catalog_enrichment import cached_supplement
+    return await cached_supplement(db, result, nsfw=nsfw)

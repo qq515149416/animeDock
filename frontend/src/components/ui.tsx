@@ -63,7 +63,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn, animeTitle, formatCount } from "@/lib/utils";
-import { getAnimeCoverUrl } from "@/lib/images";
+import { getAnimeCoverCandidates } from "@/lib/images";
 import type { Anime } from "@/types";
 import { useApp } from "./providers";
 const ICONS: Record<string, LucideIcon> = {
@@ -209,16 +209,20 @@ export function CoverImage({
   titleScale?: number;
   decorative?: boolean;
 }) {
-  const src = getAnimeCoverUrl(a);
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  return src && failedSrc !== src ? (
+  const candidates = getAnimeCoverCandidates(a);
+  const key = JSON.stringify(candidates);
+  const [failed, setFailed] = useState<{ key: string; urls: string[] }>({ key: "", urls: [] });
+  const failedUrls = failed.key === key ? failed.urls : [];
+  const src = candidates.find((url) => !failedUrls.includes(url));
+  return src ? (
     <img
       src={src}
       alt={decorative ? "" : animeTitle(a)}
       loading="lazy"
       referrerPolicy="no-referrer"
       className="h-full w-full object-cover"
-      onError={() => setFailedSrc(src)}
+      data-cover-source={src === a.fallback_image_url ? a.fallback_image_provider : "original"}
+      onError={() => setFailed((previous) => ({ key, urls: [...(previous.key === key ? previous.urls : []), src] }))}
     />
   ) : (
     <CoverArt a={a} titleScale={titleScale} />

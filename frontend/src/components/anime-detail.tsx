@@ -14,7 +14,9 @@ import {
   ErrorState,
 } from "./ui";
 import { CharacterGallery } from "./character-gallery";
-import { getAnime, searchAnime, ApiError } from "@/lib/api";
+import { ExternalSources } from "./external-sources";
+import { CATALOG_LABELS, mergeAnimeEnrichment } from "@/lib/enrichment";
+import { getAnime, getAnimeEnrichment, searchAnime, ApiError } from "@/lib/api";
 import {
   cn,
   animeTitle,
@@ -31,7 +33,7 @@ export function AnimeDetailPage({ id }: { id: number }) {
   const [expanded, setExpanded] = useState(false),
     [episodeAll, setEpisodeAll] = useState(false);
   const {
-    data: a,
+    data: base,
     error,
     isLoading,
     mutate,
@@ -39,6 +41,12 @@ export function AnimeDetailPage({ id }: { id: number }) {
     app.ready && Number.isSafeInteger(id) ? ["anime", id, app.nsfw] : null,
     () => getAnime(id, app.nsfw),
   );
+  const { data: external, error: externalError, isLoading: externalLoading, mutate: retryExternal } = useSWR(
+    base ? ["anime-enrichment", id, app.nsfw] : null,
+    () => getAnimeEnrichment(id, app.nsfw),
+    { revalidateOnFocus: false, errorRetryCount: 1, refreshInterval: (data) => data?.pending ? 2000 : 0 },
+  );
+  const a = base ? mergeAnimeEnrichment(base, external) : undefined;
   useEffect(() => {
     if (a) app.recordHistory(a.id);
   }, [a?.id, app.recordHistory]);
@@ -143,15 +151,15 @@ export function AnimeDetailPage({ id }: { id: number }) {
     ["导演", a.director || "待公布"],
   ];
   return (
-    <div className="fade-in">
-      <section className="relative overflow-hidden">
+    <div className="pb-24 md:pb-12">
+      <section className="fade-in relative overflow-hidden">
         <div
           className={cn(
             "absolute inset-0 scale-125 blur-3xl",
             a.nsfw ? "opacity-20" : "opacity-70",
           )}
         >
-          <CoverImage a={a} decorative />
+          <CoverImage a={a.banner_image_url ? { ...a, image_url: a.banner_image_url } : a} decorative />
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-bg/40 via-bg/70 to-bg" />
         <div className="container-page relative pb-8 pt-6">
@@ -278,8 +286,9 @@ export function AnimeDetailPage({ id }: { id: number }) {
           </div>
         </div>
       </section>
-      <div className="container-page grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
+      <div className="fade-in container-page grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-10">
         <div className="min-w-0 space-y-9">
+          <ExternalSources anime={a} data={external} loading={externalLoading} failed={!!externalError} retry={() => { void retryExternal(); }} />
           <section>
             <SectionTitle icon="BookOpen" title="剧情简介" />
             <div
@@ -288,8 +297,9 @@ export function AnimeDetailPage({ id }: { id: number }) {
                 !expanded && "line-clamp-3",
               )}
             >
-              {a.summary || "暂无简介，等待后续数据更新。"}
+              {a.summary || (externalLoading ? "暂无简介，正在查询其他平台…" : "暂无简介，等待后续数据更新。")}
             </div>
+            {a.field_sources?.summary && <p className="mt-2 text-xs text-mut">简介来源：{CATALOG_LABELS[a.field_sources.summary]} · 保留原文</p>}
             {a.summary?.length > 100 && (
               <button
                 onClick={() => setExpanded(!expanded)}
@@ -314,7 +324,7 @@ export function AnimeDetailPage({ id }: { id: number }) {
             <SectionTitle
               icon="CalendarDays"
               title="章节列表"
-              aside={`${a.episodes?.length || 0} 话`}
+              aside={`${a.episodes?.length || 0} 话${a.episodes_partial ? "（部分收录）" : ""}`}
             />
             {episodes?.length ? (
               <>
@@ -472,7 +482,7 @@ export function AnimeDetailPage({ id }: { id: number }) {
       </div>
       <Link
         href={`/chat?prompt=${encodeURIComponent(`给我讲讲《${title}》，值得看吗？`)}`}
-        className="fixed bottom-24 right-4 z-40 flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-sakura to-ind px-5 text-sm font-semibold text-white shadow-[0_8px_26px_-6px_rgba(255,107,157,.6)] transition hover:-translate-y-0.5 md:bottom-8 md:right-8"
+        className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-12 items-center gap-2 rounded-full bg-gradient-to-r from-sakura to-ind px-5 text-sm font-semibold text-white shadow-[0_8px_26px_-6px_rgba(255,107,157,.6)] transition hover:-translate-y-0.5 md:bottom-4 md:right-8"
       >
         <Icon name="Sparkles" size={18} />
         <span className="hidden sm:inline">问问 AI 关于这部番</span>

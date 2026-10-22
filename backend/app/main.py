@@ -29,7 +29,7 @@ class JSONFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         payload: dict[str, Any] = {'timestamp': datetime.now(timezone.utc).isoformat(), 'level': record.levelname, 'logger': record.name, 'message': record.getMessage()}
-        for key in ('path', 'method', 'status', 'duration_ms', 'error', 'anime_id', 'query', 'index_hits', 'database_hits'):
+        for key in ('path', 'method', 'status', 'duration_ms', 'error', 'anime_id', 'query', 'index_hits', 'database_hits', 'provider'):
             if hasattr(record, key):
                 payload[key] = getattr(record, key)
         if record.exc_info:

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getAnimeCoverUrl } from "../src/lib/images";
+import { getAnimeCoverUrl, getAnimeCoverCandidates } from "../src/lib/images";
 
 test("archive subjects without cover metadata load the official subject image", () => {
   assert.equal(
@@ -28,4 +28,12 @@ test("fictional demo subjects and invalid IDs keep their generated placeholders"
   for (const id of [0, -1, NaN, 1.5]) {
     assert.equal(getAnimeCoverUrl({ id, image_url: "" }, false), null);
   }
+});
+
+test("an external backup is tried after the existing official cover", () => {
+  assert.deepEqual(getAnimeCoverCandidates({ id: 517532, image_url: "", fallback_image_url: "https://cdn.myanimelist.net/backup.jpg" }, false), [
+    "https://api.bgm.tv/v0/subjects/517532/image?type=large",
+    "https://cdn.myanimelist.net/backup.jpg",
+  ]);
+  assert.deepEqual(getAnimeCoverCandidates({ id: 517532, image_url: "https://lain.bgm.tv/cover.jpg", fallback_image_url: "https://lain.bgm.tv/cover.jpg" }, false), ["https://lain.bgm.tv/cover.jpg"]);
 });
