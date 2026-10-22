@@ -316,7 +316,6 @@ export function AnimeDetailPage({ id }: { id: number }) {
           </section>
           {a.characters?.length > 0 && (
             <section>
-              <SectionTitle icon="Heart" title="角色与声优" />
               <CharacterGallery key={a.id} anime={a} />
             </section>
           )}

@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import {
   ChevronLeft,
   ChevronRight,
+  Heart,
   ImageOff,
   LoaderCircle,
   Maximize2,
@@ -20,6 +21,7 @@ import {
 } from "./ui/dialog";
 import { getPortraitImage } from "@/lib/images";
 import { cn } from "@/lib/utils";
+import { CharacterCastDialog } from "./character-cast-dialog";
 import type { AnimeDetail } from "@/types";
 
 interface GalleryImage {
@@ -124,7 +126,42 @@ function ViewerPhoto({ image }: { image: GalleryImage }) {
 
 export function CharacterGallery({ anime }: { anime: AnimeDetail }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [castId, setCastId] = useState<number | null>(null);
   const trigger = useRef<HTMLButtonElement | null>(null);
+  const castTrigger = useRef<HTMLButtonElement | null>(null);
+  const gallery = useRef<HTMLDivElement>(null);
+  const galleryId = useId();
+  const [scrollable, setScrollable] = useState({ left: false, right: false });
+
+  useEffect(() => {
+    const element = gallery.current;
+    if (!element) return;
+    const updateScroll = () => {
+      const left = element.scrollLeft > 1;
+      const right =
+        element.scrollWidth - element.clientWidth - element.scrollLeft > 1;
+      setScrollable((previous) =>
+        previous.left === left && previous.right === right
+          ? previous
+          : { left, right },
+      );
+    };
+    updateScroll();
+    element.addEventListener("scroll", updateScroll, { passive: true });
+    const observer = new ResizeObserver(updateScroll);
+    observer.observe(element);
+    return () => {
+      element.removeEventListener("scroll", updateScroll);
+      observer.disconnect();
+    };
+  }, [anime.characters.length]);
+
+  const scrollGallery = (direction: number) => {
+    const element = gallery.current;
+    if (element)
+      element.scrollBy({ left: direction * element.clientWidth * 0.8 });
+  };
+
   const images: GalleryImage[] = [];
   for (const c of anime.characters) {
     const portrait = getPortraitImage(c);
@@ -162,9 +199,48 @@ export function CharacterGallery({ anime }: { anime: AnimeDetail }) {
     setSelectedId(images[(index + offset + images.length) % images.length].id);
   return (
     <>
-      <div className="no-scrollbar -mx-1 mt-4 flex gap-3 overflow-x-auto px-1 pb-2">
+      <div className="flex min-h-11 items-center justify-between gap-3">
+        <h2 className="flex items-center gap-2 text-lg font-semibold">
+          <Heart size={19} className="text-sakura" />
+          角色与声优
+        </h2>
+        {(scrollable.left || scrollable.right) && (
+          <div className="flex shrink-0 gap-1">
+            <button
+              type="button"
+              aria-label="向左滚动角色"
+              aria-controls={galleryId}
+              disabled={!scrollable.left}
+              onClick={() => scrollGallery(-1)}
+              className="icon-btn !h-11 !w-11 border border-line focus-visible:outline focus-visible:outline-2 focus-visible:outline-sakura disabled:pointer-events-none disabled:opacity-30"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              type="button"
+              aria-label="向右滚动角色"
+              aria-controls={galleryId}
+              disabled={!scrollable.right}
+              onClick={() => scrollGallery(1)}
+              className="icon-btn !h-11 !w-11 border border-line focus-visible:outline focus-visible:outline-2 focus-visible:outline-sakura disabled:pointer-events-none disabled:opacity-30"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </div>
+        )}
+      </div>
+      <div
+        ref={gallery}
+        id={galleryId}
+        role="region"
+        aria-label="角色与声优列表"
+        tabIndex={scrollable.left || scrollable.right ? 0 : undefined}
+        className="-mx-1 mt-4 flex gap-3 overflow-x-auto scroll-smooth rounded-lg px-1 pb-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sakura motion-reduce:scroll-auto"
+      >
         {anime.characters.map((c, i) => {
           const portrait = getPortraitImage(c);
+          const firstVoice = c.actors?.[0]?.name || c.cv || "暂无资料";
+          const voiceCount = c.actors?.length || (c.cv ? 1 : 0);
           return (
             <div
               key={c.id || i}
@@ -206,37 +282,32 @@ export function CharacterGallery({ anime }: { anime: AnimeDetail }) {
                 >
                   {c.name}
                 </p>
-                <div className="mt-1 text-xs text-mut">
-                  {c.actors?.length ? (
-                    c.actors.map((actor, j) =>
-                      getPortraitImage(actor) ? (
-                        <button
-                          key={actor.id}
-                          type="button"
-                          aria-label={`查看声优 ${actor.name} 的照片`}
-                          aria-haspopup="dialog"
-                          onClick={(e) =>
-                            select(`actor:${actor.id}`, e.currentTarget)
-                          }
-                          className="block min-h-11 w-full truncate rounded-md text-left transition-colors hover:text-sakura focus-visible:outline focus-visible:outline-2 focus-visible:outline-sakura"
-                          title={actor.name}
-                        >
-                          {j === 0 ? "CV：" : "　　"}
-                          {actor.name}
-                        </button>
-                      ) : (
-                        <p
-                          key={actor.id}
-                          className="truncate"
-                          title={actor.name}
-                        >
-                          {j === 0 ? "CV：" : "　　"}
-                          {actor.name}
-                        </p>
-                      ),
-                    )
-                  ) : (
-                    <p className="truncate">CV：{c.cv || "暂无资料"}</p>
+                <p
+                  className="mt-2 truncate text-xs text-mut"
+                  title={firstVoice}
+                >
+                  CV：{firstVoice}
+                </p>
+                <div className="mt-1 flex min-h-11 items-center justify-between gap-1">
+                  {voiceCount > 0 && (
+                    <>
+                      <span className="text-[10px] text-mut">
+                        {voiceCount} 位声优
+                      </span>
+                      <button
+                        type="button"
+                        aria-label={`查看 ${c.name} 的声优详情`}
+                        aria-haspopup="dialog"
+                        onClick={(event) => {
+                          castTrigger.current = event.currentTarget;
+                          setCastId(c.id);
+                        }}
+                        className="inline-flex min-h-11 shrink-0 items-center gap-0.5 rounded-md text-[11px] text-sakura transition-colors hover:text-fg focus-visible:outline focus-visible:outline-2 focus-visible:outline-sakura"
+                      >
+                        查看详情
+                        <ChevronRight size={12} />
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -244,6 +315,15 @@ export function CharacterGallery({ anime }: { anime: AnimeDetail }) {
           );
         })}
       </div>
+      <CharacterCastDialog
+        character={anime.characters.find((c) => c.id === castId) || null}
+        onClose={() => setCastId(null)}
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          castTrigger.current?.focus();
+        }}
+        onSelectPhoto={(actor, button) => select(`actor:${actor.id}`, button)}
+      />
       <Dialog
         open={!!selected}
         onOpenChange={(open) => {
