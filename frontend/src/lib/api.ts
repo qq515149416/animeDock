@@ -7,7 +7,10 @@ import type {
   SearchResult,
   ChatSession,
   ChatMessage,
+  StatisticsMetadata,
+  StatisticsResponse,
 } from "@/types";
+import { demoStatistics, type StatisticsFilters } from "./statistics";
 import { DEMO_ANIME, DEMO_META, demoDetail, demoSearch } from "./demo";
 export const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || "/api").replace(
@@ -117,8 +120,44 @@ export async function getAnime(
 export async function getMeta(nsfw: boolean): Promise<MetaFilters> {
   return DEMO_MODE ? DEMO_META : request(`/meta/filters?nsfw=${nsfw}`);
 }
-export async function getAnimeEnrichment(id: number, nsfw: boolean): Promise<AnimeEnrichment> {
-  if (DEMO_MODE) return { anime_id: id, pending: false, ratings: [], sources: [], supplement: {}, field_sources: {}, providers: [] };
+export async function getStatisticsMeta(): Promise<StatisticsMetadata> {
+  if (!DEMO_MODE) return request("/stats/meta");
+  const list = DEMO_ANIME.filter((a) => a.region === "日本");
+  return {
+    region: "日本",
+    includes_nsfw: true,
+    years: [
+      ...new Set(
+        list.map((a) => a.year).filter((y): y is number => y !== null),
+      ),
+    ].sort((a, b) => b - a),
+    current_season: DEMO_META.current_season,
+    catalog_count: list.length,
+    missing_quarter_count: list.filter((a) => !a.year || !a.season).length,
+  };
+}
+export async function getStatistics(
+  f: StatisticsFilters,
+  query: string,
+): Promise<StatisticsResponse> {
+  return DEMO_MODE
+    ? demoStatistics(DEMO_ANIME, f)
+    : request(`/stats/${f.view === "trend" ? "trends" : "season"}?${query}`);
+}
+export async function getAnimeEnrichment(
+  id: number,
+  nsfw: boolean,
+): Promise<AnimeEnrichment> {
+  if (DEMO_MODE)
+    return {
+      anime_id: id,
+      pending: false,
+      ratings: [],
+      sources: [],
+      supplement: {},
+      field_sources: {},
+      providers: [],
+    };
   return request(`/anime/${id}/enrichment?nsfw=${nsfw}`);
 }
 export async function getSessions(

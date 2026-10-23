@@ -1,4 +1,43 @@
 export type Season = "winter" | "spring" | "summer" | "autumn";
+export type StatisticsDimension = "genre" | "source";
+export type StatisticsMetric = "average" | "max";
+export interface StatisticsMetadata {
+  region: "日本";
+  includes_nsfw: true;
+  years: number[];
+  current_season: { year: number; season: Season };
+  catalog_count: number;
+  missing_quarter_count: number;
+}
+export interface StatisticsGroup {
+  name: string;
+  count: number;
+  rated_count: number;
+  average_score: number | null;
+  max_score: number | null;
+  vote_count: number;
+}
+export interface StatisticsQuarter {
+  year: number;
+  season: Season;
+  total_count: number;
+  rated_count: number;
+  average_score: number | null;
+  max_score: number | null;
+  vote_count: number;
+  classified_count: number;
+  known_source_count: number;
+  distribution_total: number;
+  groups: StatisticsGroup[];
+}
+export interface StatisticsResponse {
+  dimension: StatisticsDimension;
+  region: "日本";
+  includes_nsfw: true;
+  distribution_basis: "genre_occurrences" | "works";
+  generated_at: string;
+  quarters: StatisticsQuarter[];
+}
 export interface Anime {
   id: number;
   name: string;

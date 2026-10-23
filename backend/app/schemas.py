@@ -137,3 +137,44 @@ class FilterMetadata(APIModel):
 class HealthResponse(APIModel):
     status: Literal['ok', 'degraded']
     services: dict[str, bool]
+
+
+class StatisticsMetadata(APIModel):
+    region: Literal['日本'] = '日本'
+    includes_nsfw: Literal[True] = True
+    years: list[int]
+    current_season: CurrentSeason
+    catalog_count: int
+    missing_quarter_count: int
+
+
+class StatisticsGroup(APIModel):
+    name: str
+    count: int = 0
+    rated_count: int = 0
+    average_score: float | None = None
+    max_score: float | None = None
+    vote_count: int = 0
+
+
+class StatisticsQuarter(APIModel):
+    year: int
+    season: Literal['winter', 'spring', 'summer', 'autumn']
+    total_count: int = 0
+    rated_count: int = 0
+    average_score: float | None = None
+    max_score: float | None = None
+    vote_count: int = 0
+    classified_count: int = 0
+    known_source_count: int = 0
+    distribution_total: int = 0
+    groups: list[StatisticsGroup]
+
+
+class StatisticsResponse(APIModel):
+    dimension: Literal['genre', 'source']
+    region: Literal['日本'] = '日本'
+    includes_nsfw: Literal[True] = True
+    distribution_basis: Literal['genre_occurrences', 'works']
+    generated_at: datetime
+    quarters: list[StatisticsQuarter]

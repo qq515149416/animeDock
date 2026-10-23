@@ -28,6 +28,7 @@ import type { Anime } from "@/types";
 const NAV = [
   { key: "/", label: "每日放送", icon: "CalendarDays" },
   { key: "/anime", label: "动画库", icon: "LibraryBig" },
+  { key: "/stats", label: "数据统计", icon: "ChartNoAxesCombined" },
   { key: "/chat", label: "AI 助手", icon: "Sparkles" },
 ];
 export function Logo() {
@@ -76,7 +77,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         跳到主要内容
       </a>
       <header className="glass sticky top-0 z-50 border-b border-line">
-        <div className="container-page flex h-16 items-center gap-3 lg:gap-4">
+        <div className="container-page flex h-16 items-center gap-3 md:gap-2 lg:gap-4">
           <Logo />
           <nav className="ml-2 hidden md:block lg:ml-6" aria-label="主导航">
             <SlideTabs
@@ -91,7 +92,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               }))}
               value={path}
               onChange={(p) => router.push(p)}
-              itemClass="h-16 px-3 text-[14px] font-medium lg:px-4"
+              itemClass="h-16 px-2 text-[13px] font-medium lg:px-4 lg:text-[14px]"
             />
           </nav>
           <div className="flex-1" />
@@ -168,21 +169,23 @@ export function Shell({ children }: { children: React.ReactNode }) {
                   </Menu.Item>
                 ))}
                 <Menu.Separator className="my-1 h-px bg-line" />
-                <div className="flex h-11 items-center gap-2.5 px-3 text-[13px]">
-                  <Icon name="ShieldAlert" size={16} className="text-mut" />
-                  <label
-                    htmlFor="global-nsfw"
-                    className="flex-1 cursor-pointer"
-                  >
-                    显示 NSFW 内容
-                  </label>
-                  <Switch
-                    id="global-nsfw"
-                    checked={app.nsfw}
-                    onCheckedChange={app.requestNsfw}
-                  />
-                </div>
-                {app.nsfw && (
+                {path !== "/stats" && (
+                  <div className="flex h-11 items-center gap-2.5 px-3 text-[13px]">
+                    <Icon name="ShieldAlert" size={16} className="text-mut" />
+                    <label
+                      htmlFor="global-nsfw"
+                      className="flex-1 cursor-pointer"
+                    >
+                      显示 NSFW 内容
+                    </label>
+                    <Switch
+                      id="global-nsfw"
+                      checked={app.nsfw}
+                      onCheckedChange={app.requestNsfw}
+                    />
+                  </div>
+                )}
+                {path !== "/stats" && app.nsfw && (
                   <div className="flex items-center gap-2 px-3 py-2 text-xs text-mut">
                     <label htmlFor="unblur" className="flex-1">
                       直接显示 NSFW 封面

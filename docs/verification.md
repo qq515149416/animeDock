@@ -55,3 +55,16 @@
 - External covers now use separate `fallback_image_url`/`fallback_image_provider` fields. The shared image component retains the original cover and only tries the external image after an image load error. Legacy attributed main-image overlays are normalized before rendering.
 - Regression tests were observed failing before the fix. Final checks:131 backend tests with real PostgreSQL,18 frontend tests, strict TypeScript, and both production Docker builds passed. Read-only review found no actionable issues. Updated local backend/worker/frontend; all six containers healthy.
 - Browser: library and detail both loaded `https://api.bgm.tv/v0/subjects/517532/image?type=large` at naturalWidth1250 after enrichment. Blocking this URL only in the dedicated browser page caused fallback to MAL at naturalWidth600. Removing the block and reloading restored the Bangumi image. Network overrides were reset and the dedicated browser task was closed.
+
+# 2026-10-23 季度统计
+
+- 已实现 `/stats` 与 `/api/stats/meta`、`/api/stats/trends`、`/api/stats/season`。固定日本、包含 NSFW，仅返回汇总；地区/NSFW/未知参数返回 422，页面不提供相应开关，也不改变全站 NSFW 偏好。
+- 综合评分为有效作品当前 Bangumi 评分的算术平均值，最高评分为当前最大值。数量包含未评分作品，评分排除零分；无评分为 null，折线保留断点。来源按作品数，类型按去重标签计次并保留未分类。显示评分作品数、评分人次、覆盖率与明细表。
+- 后端完整测试：144 passed，包含真实 PostgreSQL 的隔离、回滚 schema；前端最终完整测试：23 passed。strict TypeScript、Python 编译、前后端 Docker 生产构建及 `git diff --check` 通过。既有锁定依赖版本未改变，仅增加按需加载的 ECharts 及其依赖。
+- 真实 API 对照独立只读 SQL：2025 冬季至 2026 夏季恰为连续七个季度，两个维度的作品数、有效评分数、均分与分母一致；每季含 11–19 部 NSFW 作品。测得该范围请求约 45.2ms（类型）、20.5ms（来源），未增加预计算表或额外缓存。
+- 2025 冬季：159 部日本作品，149 部有评分，含 17 部 NSFW。来源饼图分母为 159，类型饼图分母为 259 次。日本总量 22,544，缺少首播季度 2,769；主表总量仍为 31,178。核对快照：`docs/verification/statistics-sample-2026-10-23.json`。
+- 真实浏览器通过：跨年起止连续操作、综合/最高评分、类型/来源切换、全选 23 组/清空/常见五类、非法逆序范围提示、空季度、请求失败及重试恢复、深浅主题、评分人次展示、统计设置无 NSFW 开关。
+- 手机 390px 的 document.scrollWidth=390；新增第四个导航曾导致平板 768px 溢出到 800px，调整中等屏幕导航间距后 document.scrollWidth=768、设置按钮右边界=744。桌面同样无页面横向溢出；明细表内部可横向滚动。
+- 独立只读代码审查未发现 Critical/Important 问题；已补齐指出的评分样本展示细节。浏览器网络覆盖已清除，主题恢复原深色，专用浏览器任务已关闭。
+- 本地 backend/frontend 已更新，六个容器健康。无需新增表、执行数据迁移或主动同步；播放量仍暂缓。改动留在当前工作区，没有提交或推送。
+- 截图：`docs/screenshots/statistics-trend-desktop.png`、`statistics-source-desktop.png`、`statistics-mobile.png`、`statistics-mobile-charts.png`、`statistics-tablet.png`。

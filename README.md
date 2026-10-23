@@ -105,10 +105,15 @@ python -m app.worker.scheduler
 
 - `/`：北京时间日期与季度、七天放送、网格和时间轴；视图偏好保存到浏览器。
 - `/anime`：关键词联想、分类/来源/地区、类型 AND 筛选、年份和季度、分面计数、排序、列表/网格、每页 18 条与 URL 同步。
+- `/stats`：固定日本作品并包含 NSFW 汇总；按类型/改编来源查看跨年季度评分折线，以及单季度评分柱状图和数量饼图。起止年份、季度、指标、分组与 URL 同步，提供样本数、覆盖率和明细表。页面不展示具体作品，不提供地区/NSFW 开关，也不受全站 NSFW 偏好影响。
 - `/anime/[id]`：简介、评分、制作信息、章节、角色声优、关联作品、相似推荐；收藏、浏览记录与提醒标记保存在当前浏览器。提醒用于本地列表管理，不发送系统推送。
 - `/chat`：匿名客户端会话、Markdown、剧透遮罩、SSE 工具状态和文本、来源与动画卡片、停止生成、复制、重试及删除历史。反馈按钮在当前会话记录界面标记。
-- `/` 快捷键打开全局搜索，Esc 关闭，↑↓ 与 Enter 选择；手机为底部三栏导航和筛选抽屉。
-- NSFW 默认关闭，服务端过滤条目和统计；首次开启需年龄确认。默认模糊封面，支持单张解除或设置直接显示。关闭时清空解除记录、清除当前聊天显示；服务端会遮盖曾开启 NSFW 时生成的历史内容。
+- `/` 快捷键打开全局搜索，Esc 关闭，↑↓ 与 Enter 选择；手机为底部四栏导航和筛选抽屉。
+- NSFW 默认关闭，服务端过滤作品条目及其相关计数；独立的数据统计页面按上述固定范围汇总。首次开启作品展示需年龄确认。默认模糊封面，支持单张解除或设置直接显示。关闭时清空解除记录、清除当前聊天显示；服务端会遮盖曾开启 NSFW 时生成的历史内容。
+
+统计按首播季度归类，跨季度长篇只计入首播季度。综合评分为有效作品 Bangumi 当前评分的算术平均值，最高评分为组内当前最高值，未评分不计作零分。折线允许跨年（例如 2025 冬季至 2026 夏季，共七季），没有有效评分的季度保留断点；数据不是历史时点评分。
+
+来源占比按作品数计算，保留“其他”。类型是多值，因此饼图明确采用“类型标签占比”：每部作品在不同类型各计一次、同一类型内去重，无类型计入“未分类”，分母为全部标签计次数；另行显示去重作品总数。类型缺失和现有标签映射会影响覆盖率。首版不统计播放量，也不混合尚未覆盖全库的外站评分。
 
 ## API
 
@@ -122,12 +127,17 @@ python -m app.worker.scheduler
 | GET | `/api/anime/{id}` | 详情，NSFW 被拦截为 403 `NSFW_BLOCKED` |
 | GET | `/api/anime/{id}/enrichment` | 多平台独立评分、原站链接、只补空缺字段及来源；同样校验 NSFW |
 | GET | `/api/meta/filters` | 枚举、可见作品年份、当前季度 |
+| GET | `/api/stats/meta` | 日本作品年份、总量和缺失首播季度数量，包含 NSFW |
+| GET | `/api/stats/trends` | `dimension=genre\|source`、`start_year/start_season/end_year/end_season`，连续跨年季度汇总 |
+| GET | `/api/stats/season` | `dimension=genre\|source`、`year/season`，单季度评分和数量分布 |
 | POST | `/api/chat` | `{client_id,session_id?,message,nsfw}`，SSE |
 | GET | `/api/chat/sessions?client_id=...` | 客户端会话列表 |
 | GET/DELETE | `/api/chat/sessions/{id}?client_id=...` | 必须提供所属客户端 UUID |
 | GET | `/api/health` | 数据库/Redis/Meili 连通性；降级状态为 503 |
 
 搜索 `region` 默认日本，`all` 表示不限；类型参数可重复 `genres=奇幻&genres=治愈`。季度是 `winter/spring/summer/autumn`，年份/季度不限时省略。API 默认每页 24、最大 60；前端按设计稿每页请求 18。每组 facet 应用除本组外的其余筛选。
+
+统计接口固定日本并包含 NSFW，不接收 `region`、`nsfw` 或其他未知筛选参数；传入时返回 422。响应仅返回分组名称、评分、数量和样本信息，不返回作品 ID、名称、封面或链接。统计是 PostgreSQL 全量聚合，不受动画库分页限制，无需新增数据表或迁移。
 
 SSE 事件为 `session / tool_start / tool_end / token / anime_refs / sources / done / error`。客户端使用 `fetch` 与 `ReadableStream`，能解析 UTF-8 与跨分片 CRLF。服务端最多五轮工具调用，优先强制站内查询，加载最近十条上下文；请求的 NSFW 状态固定传入工具，模型无法覆盖。Tavily 只有站内无结果或问题需要外部新闻/访谈时才可用，未配置明确返回未启用。
 

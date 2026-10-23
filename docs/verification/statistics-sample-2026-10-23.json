@@ -1,0 +1,67 @@
+{
+  "verified_date": "2026-10-23",
+  "region": "日本",
+  "includes_nsfw": true,
+  "catalog_count": 22544,
+  "missing_quarter_count": 2769,
+  "canonical_catalog_total": 31178,
+  "comparison": "API totals, valid-score counts and means matched independent read-only SQL; source distribution equals work count; genre distribution counts distinct labels per work including unclassified.",
+  "quarters": [
+    {
+      "quarter": "2025-winter",
+      "total": 159,
+      "rated": 149,
+      "nsfw_included": 17,
+      "genre_occurrences": 259,
+      "source_distribution_total": 159
+    },
+    {
+      "quarter": "2025-spring",
+      "total": 175,
+      "rated": 157,
+      "nsfw_included": 19,
+      "genre_occurrences": 280,
+      "source_distribution_total": 175
+    },
+    {
+      "quarter": "2025-summer",
+      "total": 164,
+      "rated": 156,
+      "nsfw_included": 16,
+      "genre_occurrences": 284,
+      "source_distribution_total": 164
+    },
+    {
+      "quarter": "2025-autumn",
+      "total": 171,
+      "rated": 162,
+      "nsfw_included": 19,
+      "genre_occurrences": 281,
+      "source_distribution_total": 171
+    },
+    {
+      "quarter": "2026-winter",
+      "total": 167,
+      "rated": 154,
+      "nsfw_included": 11,
+      "genre_occurrences": 289,
+      "source_distribution_total": 167
+    },
+    {
+      "quarter": "2026-spring",
+      "total": 168,
+      "rated": 154,
+      "nsfw_included": 16,
+      "genre_occurrences": 288,
+      "source_distribution_total": 168
+    },
+    {
+      "quarter": "2026-summer",
+      "total": 179,
+      "rated": 167,
+      "nsfw_included": 15,
+      "genre_occurrences": 293,
+      "source_distribution_total": 179
+    }
+  ]
+}

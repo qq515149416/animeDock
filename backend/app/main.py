@@ -20,7 +20,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.config import get_settings
 from app.db import engine
 from app.deps import check_rate_limit, get_meili_client, get_redis, resolve_client_ip
-from app.routers import anime, calendar, chat, meta
+from app.routers import anime, calendar, chat, meta, stats
 from app.schemas import HealthResponse
 
 
@@ -104,6 +104,7 @@ app.include_router(calendar.router, prefix='/api')
 app.include_router(anime.router, prefix='/api')
 app.include_router(meta.router, prefix='/api')
 app.include_router(chat.router, prefix='/api')
+app.include_router(stats.router, prefix='/api')
 
 
 @app.get('/api/health', response_model=HealthResponse, responses={503: {'model': HealthResponse}}, tags=['运行状态'])
